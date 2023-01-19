@@ -1,18 +1,28 @@
 <template>
     <div>
-      <pre>
-        {{auth.user}}
-      </pre>
+      <div v-if="firebaseUser">
+        <button class="button" @click="signOut" v-if="firebaseUser">Sign out</button>
+      <client-only>
+        <pre
+          >{{ firebaseUser }}
+        </pre
+        >
+      </client-only>
+      </div>
     </div>
 </template>
 
-<script setup lang="ts">
-
+<script setup>
 definePageMeta({
     middleware: ['auth']
 })
 
-const auth = useFirebaseAuth()
+const firebaseUser = useFirebaseUser();
+
+const signOut = async () => {
+  await signOutUser();
+};
+
 
 
 </script>

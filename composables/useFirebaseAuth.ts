@@ -1,55 +1,60 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, User} from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth } from 'firebase/auth'
 
-export default function() {
-  const { $auth } = useNuxtApp()
+export const createUser = async (email: string, password: string) => {
+  const auth = getAuth();
+  const credentials = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  ).catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.error(errorCode, errorMessage);
+  });
+  return credentials;
+};
 
-  const user = useState<User | null>(() => null)
+export const signInUser = async (email: string, password: string) => {
+  const auth = getAuth();
+  const credentials = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  ).catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.error(errorCode, errorMessage);
+  });
+  return credentials;
+};
 
-  const registerUser = async (email: string, password: string): Promise<boolean> => {
-    try {
-      const userCreds = await createUserWithEmailAndPassword($auth, email, password)
-      if (userCreds) {
-        user.value = userCreds.user
-        console.log(user)
-        return true
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        // handle error
-      }
-      return false
+export const initUser = async () => {
+  const auth = getAuth();
+  const firebaseUser = useFirebaseUser();
+
+  firebaseUser.value = auth.currentUser;
+
+  const userCookie = useCookie("userCookie");
+
+  const router = useRouter();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      router.push("/dashboard");
+    } else {
+      //if signed out
+      router.push("/login");
     }
-    return false
-  }
 
-  const authUser = async (email: string, password: string): Promise<boolean> => {
-    try {
-      const userCreds = await signInWithEmailAndPassword($auth, email, password)
-      if (userCreds) {
-        user.value = userCreds.user
-        console.log(user)
-        return true
-      }
+    firebaseUser.value = user;
 
-    } catch (error: unknown) { 
-      if (error instanceof Error) {
-        // handle error
-        return false
-      }
-      return false
-    }
-    return false
-  }
-
-  const signOutUser = async () => {
-    const result = await $auth.signOut();
-    return result;
-  };
-
-  return {
-    user,
-    registerUser,
-    authUser,
-    signOutUser
-  }
+    // @ts-ignore
+    userCookie.value = user; //ignore error because nuxt will serialize to json
+  });
 }
+
+export const signOutUser = async () => {
+  const auth = getAuth();
+  const result = await auth.signOut();
+  return result;
+};
