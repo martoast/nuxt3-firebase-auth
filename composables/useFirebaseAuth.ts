@@ -31,7 +31,7 @@ export const signInUser = async (email: string, password: string) => {
 export const initUser = async () => {
   const auth = getAuth();
   const firebaseUser = useFirebaseUser();
-
+  // @ts-ignore
   firebaseUser.value = auth.currentUser;
 
   const userCookie = useCookie("userCookie");
@@ -45,7 +45,7 @@ export const initUser = async () => {
       //if signed out
       router.push("/login");
     }
-
+    // @ts-ignore
     firebaseUser.value = user;
 
     // @ts-ignore
