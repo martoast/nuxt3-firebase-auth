@@ -40,7 +40,7 @@ export const initUser = async () => {
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      router.push("/dashboard");
+      
     } else {
       //if signed out
       router.push("/login");
@@ -50,6 +50,11 @@ export const initUser = async () => {
 
     // @ts-ignore
     userCookie.value = user; //ignore error because nuxt will serialize to json
+
+    $fetch("/api/auth", {
+      method: "POST",
+      body: { user },
+    });
   });
 }
 
