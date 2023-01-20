@@ -17,10 +17,13 @@ definePageMeta({
     middleware: ['auth']
 })
 
+const router = useRouter()
+
 const firebaseUser = useFirebaseUser();
 
 const signOut = async () => {
   await signOutUser();
+  router.push('/login')
 };
 
 

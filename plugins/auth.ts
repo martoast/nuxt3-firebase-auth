@@ -1,8 +1,8 @@
 export default defineNuxtPlugin(() => {
     addRouteMiddleware('auth', () => {
-        const { $auth } = useNuxtApp()
-        if(!$auth?.currentUser?.uid) {
-            return navigateTo('/login')
-        }
+        
+        const nuxtApp  = useNuxtApp()
+
+        console.log(nuxtApp.$auth)
     })
   })

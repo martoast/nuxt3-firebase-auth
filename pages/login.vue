@@ -23,12 +23,14 @@
       password: ""
     })
 
+    const router = useRouter()
+
     const handleSignin = async () => {
       try {
         await signInUser(form.email, form.password);
         form.email = "";
         form.password = "";
-
+        router.push('/dashboard')
       }
       catch (e) {
         console.error(e)
